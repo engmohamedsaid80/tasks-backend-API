@@ -3,18 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using tasks_backend_api.Interfaces;
+using tasks_backend_api.Models;
 
 namespace tasks_backend_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class TasksController : ControllerBase
     {
+        private readonly ITaskProvider provider;
+        public TasksController(ITaskProvider provider)
+        {
+            this.provider = provider;
+        }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var result = await provider.GetTasksAsync();
+
+            if (result.isSuccess) return Ok(result.results);
+
+            return NotFound();
         }
 
         // GET api/values/5
@@ -36,10 +47,10 @@ namespace tasks_backend_api.Controllers
         {
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //// DELETE api/values/5
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }
